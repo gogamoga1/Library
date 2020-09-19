@@ -12,41 +12,44 @@ btnBook.addEventListener("click", () => {
 const btnAdd = document.querySelector("#addbook");
 btnAdd.addEventListener("click", () => {
   document.querySelector(".bg-container").style.display = "none";
-  addBookToLibrary(new Book());
+  new Book().addBookToLibrary()
+  //addBookToLibrary(new Book());
   form.reset();
 });
 
-function Book() {
-  this.title = form.title.value;
-  this.author = form.author.value;
-  this.pages = form.pages.value;
-  this.read = form.isread.checked;
-}
+class Book {
+  constructor() {
+    this.title = form.title.value;
+    this.author = form.author.value;
+    this.pages = form.pages.value;
+    this.read = form.isread.checked;
+  }
 
-function addBookToLibrary(obj) {
-  myLibrary.push(obj);
-  saveToStorage();
-  addOneBook();
-}
+  addBookToLibrary () {
+    myLibrary.push(this);
+    console.log(this)
+    Book.saveToStorage();
+    Book.addOneBook();
+  }
 
-function isRead(el) {
-  myLibrary[el.id].read = !myLibrary[el.id].read;
-  el.previousElementSibling.textContent = `${el.checked ? "Read" : "Not read"}`
-  saveToStorage();
-}
+  static saveToStorage() {
+    localStorage.setItem('myLibrary', JSON.stringify(myLibrary))
+  }
 
-function saveToStorage() {
-  localStorage.setItem('myLibrary', JSON.stringify(myLibrary))
-}
+  static isRead(el) {
+    myLibrary[el.id].read = !myLibrary[el.id].read;
+    el.previousElementSibling.textContent = `${el.checked ? "Read" : "Not read"}`
+    this.saveToStorage();
+  }
 
-function displayBooks() {
+  static displayBooks() {
     while (container.childElementCount > 1) {
     container.removeChild(container.lastChild)
   }
-  myLibrary.forEach(addOneBook);
+  myLibrary.forEach(this.addOneBook);
 }
 
-function addOneBook(lastItem, index) {
+static addOneBook(lastItem, index) {
   if (lastItem == null) {
     lastItem = myLibrary[myLibrary.length - 1]
     index = myLibrary.length - 1
@@ -78,7 +81,7 @@ function addOneBook(lastItem, index) {
     
     newCheckBox.type = "checkbox";
     newCheckBox.checked = lastItem.read;
-    newCheckBox.setAttribute("onclick", `isRead(this)`);
+    newCheckBox.setAttribute("onclick", `Book.isRead(this)`);
     newCheckBox.setAttribute("id", `${index}`);
     div.appendChild(newCheckBox);
 
@@ -88,14 +91,19 @@ function addOneBook(lastItem, index) {
     div.appendChild(newCheckBox1);
   }
 
+
+}
+
+
+
 document.body.addEventListener( 'click', e => {
   if (e.target.className === 'remove-btn') {
     myLibrary.splice(e.target.id, 1);
-    saveToStorage();
+    Book.saveToStorage();
     let el = document.querySelector(`[data-book="${e.target.id}"]`);
     el.remove();
-    displayBooks();
+    Book.displayBooks();
   }
 } );
 
-displayBooks();
+Book.displayBooks();
