@@ -2,7 +2,10 @@ let myLibrary = JSON.parse(localStorage.getItem('myLibrary')) || [];
 const container = document.querySelector(".card-container");
 
 const closePopUp = document.getElementsByTagName('span')[0];
-closePopUp.addEventListener('click', () => document.querySelector(".bg-container").style.display = "none");
+closePopUp.addEventListener('click', () => { 
+  document.querySelector(".bg-container").style.display = "none"
+  form.reset()
+} )
 
 const btnBook = document.querySelector(".add-book");
 btnBook.addEventListener("click", () => {
@@ -11,10 +14,11 @@ btnBook.addEventListener("click", () => {
 
 const btnAdd = document.querySelector("#addbook");
 btnAdd.addEventListener("click", () => {
+  if (form.title.validity.valid && form.author.validity.valid && form.pages.validity.valid) {
   document.querySelector(".bg-container").style.display = "none";
   new Book().addBookToLibrary()
-  //addBookToLibrary(new Book());
   form.reset();
+} 
 });
 
 class Book {
